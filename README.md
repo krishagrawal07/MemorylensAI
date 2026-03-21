@@ -1,97 +1,287 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# MemoryLens AI 🧠
 
-# Getting Started
+**Your Personal Offline Memory Assistant**
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+MemoryLens AI is a revolutionary mobile app that helps users remember where they put things, what they saw, and what they need to do - all while keeping everything completely private and running entirely on-device.
 
-## Step 1: Start Metro
+## 🎯 Problem Statement
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+In our busy lives, we constantly forget:
+- Where we parked our car
+- Where we kept our keys, wallet, or passport
+- What medicines we need to take
+- Important notes and reminders
+- Locations of important documents
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Current solutions either store data in the cloud (privacy concerns) or lack intelligent AI-powered search and organization.
 
-```sh
-# Using npm
-npm start
+## 💡 Solution
 
-# OR using Yarn
-yarn start
+MemoryLens AI combines **text, voice, and vision AI** running entirely **on-device** using the RunAnywhere SDK. Users can capture memories through multiple modalities and ask natural language questions to retrieve them instantly.
+
+### Key Features
+- **100% Private & Offline**: All AI processing happens on your device
+- **Multimodal Input**: Text notes, voice recordings, photo capture
+- **Intelligent Search**: Ask questions like "Where are my keys?" or "What medicine do I need?"
+- **Smart Organization**: AI-generated tags, categories, and summaries
+- **No Cloud Dependency**: Works offline everywhere
+
+## 🚀 Why This Matters
+
+### Privacy First
+- Zero data leaves your device
+- No cloud accounts required
+- Complete control over your memories
+
+### Practical Use Cases
+- **Daily Life**: Find keys, wallet, charger, glasses
+- **Travel**: Remember parking spots, hotel details
+- **Health**: Track medicine schedules and locations
+- **Work**: Organize notes, documents, meeting details
+- **Elderly Care**: Easy memory assistance for seniors
+
+### Technical Innovation
+- On-device AI inference for real-time responses
+- Multimodal fusion of text, voice, and vision data
+- Efficient local storage and retrieval
+- Hackathon-ready demo with sample data
+
+## 🛠️ Technology Stack
+
+- **Framework**: React Native (TypeScript)
+- **Navigation**: React Navigation
+- **Database**: SQLite (react-native-sqlite-storage)
+- **AI Engine**: RunAnywhere SDK (on-device inference)
+- **Camera**: React Native Image Picker
+- **Audio**: React Native Audio Recorder Player
+- **Permissions**: React Native Permissions
+- **State Management**: React Context + Hooks
+
+## 📱 App Architecture
+
+```
+src/
+├── components/          # Reusable UI components
+├── screens/            # App screens
+├── navigation/         # Navigation setup
+├── services/           # Business logic services
+├── ai/                 # AI model integrations
+├── db/                 # Database layer
+├── hooks/              # Custom React hooks
+├── types/              # TypeScript type definitions
+└── utils/              # Utility functions
 ```
 
-## Step 2: Build and run your app
+### Core Services
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+#### Memory Service
+- Handles memory CRUD operations
+- Coordinates multimodal data fusion
+- Manages search and retrieval
 
-### Android
+#### AI Services
+- **Text AI**: Summarization, tagging, categorization, Q&A
+- **Speech-to-Text**: Voice note transcription
+- **Vision AI**: Image analysis, object/scene detection
 
-```sh
-# Using npm
-npm run android
+#### Database Service
+- Local SQLite storage
+- Memory data persistence
+- Efficient querying and indexing
 
-# OR using Yarn
-yarn android
+## 🎨 User Experience
+
+### Main Screens
+1. **Onboarding**: Privacy-focused introduction
+2. **Permissions**: Camera, microphone, storage access
+3. **Home Dashboard**: Quick actions, recent memories, categories
+4. **Capture Memory**: Text/voice/photo input options
+5. **Ask MemoryLens**: Natural language Q&A interface
+6. **Search Results**: Filtered memory display
+7. **Memory Detail**: Full memory view with actions
+8. **Settings**: Privacy info, data management
+
+### Key Interactions
+- **Quick Capture**: One-tap memory creation
+- **Smart Search**: Voice or text queries
+- **Category Browsing**: Organized memory access
+- **Memory Actions**: Favorite, pin, delete
+
+## 🔧 Setup Instructions
+
+### Prerequisites
+- Node.js 22.11.0+
+- React Native development environment
+- Android Studio (for Android) or Xcode (for iOS)
+- RunAnywhere SDK (placeholder integration)
+
+### Installation
+
+1. **Clone and Install Dependencies**
+   ```bash
+   git clone <repository-url>
+   cd MemoryLensAI
+   npm install
+   ```
+
+2. **Install iOS Dependencies** (iOS only)
+   ```bash
+   cd ios && bundle install && bundle exec pod install
+   ```
+
+3. **RunAnywhere SDK Integration**
+   - Download RunAnywhere SDK
+   - Add SDK files to project
+   - Update AI service placeholders with actual SDK calls
+   - Configure model initialization
+
+4. **Start Metro Server**
+   ```bash
+   npm start
+   ```
+
+5. **Run on Device/Emulator**
+   ```bash
+   # Android
+   npm run android
+
+   # iOS
+   npm run ios
+   ```
+
+### Build Configuration
+
+#### Android
+- Minimum SDK: API 21 (Android 5.0)
+- Target SDK: API 34 (Android 14)
+- Permissions: CAMERA, RECORD_AUDIO, WRITE_EXTERNAL_STORAGE
+
+#### iOS
+- Minimum iOS: 11.0
+- Permissions: NSCameraUsageDescription, NSMicrophoneUsageDescription, NSPhotoLibraryUsageDescription
+
+## 🎪 Hackathon Demo Script
+
+### Quick Demo Flow
+
+1. **Launch App**
+   - Show onboarding and permissions flow
+   - Highlight "100% Private & Offline" messaging
+
+2. **Sample Data Demo**
+   - App pre-loads demo memories
+   - Show categories: Objects, Parking, Medicine, Documents
+
+3. **Q&A Demo**
+   - Ask "Where are my keys?"
+     - Returns: "I kept my keys on the study table near the window"
+   - Ask "Where did I park?"
+     - Returns: "Car parked in basement B2 near pillar 18"
+   - Ask "What medicine did I save?"
+     - Returns: "Take medicine after dinner, keep in fridge"
+
+4. **Capture Demo**
+   - Show text memory creation
+   - Demonstrate AI summary and tagging
+   - Show search working immediately
+
+5. **Settings Demo**
+   - Show privacy explanations
+   - Highlight offline-first design
+   - Display AI model status
+
+### Demo Highlights
+- **Instant Responses**: No loading delays for AI
+- **Privacy Focus**: Emphasize "no cloud" messaging
+- **Multimodal Ready**: Show placeholders for voice/vision
+- **Production Quality**: Polished UI, error handling
+
+## 🔮 Future Enhancements
+
+### Phase 2 Features
+- Real-time voice commands
+- OCR for document scanning
+- Memory relationship graphs
+- Reminder integrations
+- Cross-device sync (optional, local network only)
+
+### Advanced AI
+- Custom model fine-tuning
+- Memory embeddings for semantic search
+- Voice output responses
+- Multi-language support
+
+### Platform Extensions
+- Wear OS integration
+- iOS widgets
+- Android shortcuts
+- Web companion app
+
+## 📊 Technical Implementation Notes
+
+### RunAnywhere SDK Integration Points
+
+```typescript
+// Text AI Service
+await runAnywhere.textModel.initialize();
+const summary = await runAnywhere.textModel.summarize(text);
+const tags = await runAnywhere.textModel.extractTags(text);
+
+// Speech-to-Text Service
+await runAnywhere.sttModel.initialize();
+const transcript = await runAnywhere.sttModel.transcribe(audioUri);
+
+// Vision AI Service
+await runAnywhere.visionModel.initialize();
+const analysis = await runAnywhere.visionModel.analyze(imageUri);
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+### Database Schema
+```sql
+CREATE TABLE memories (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  rawText TEXT,
+  voiceTranscript TEXT,
+  imageUri TEXT,
+  aiSummary TEXT NOT NULL,
+  aiTags TEXT NOT NULL, -- JSON array
+  category TEXT NOT NULL,
+  timestamp TEXT NOT NULL,
+  -- ... additional fields
+);
 ```
 
-Then, and every time you update your native dependencies, run:
+### Memory Data Flow
+1. User captures memory (text/voice/image)
+2. AI services process content
+3. Multimodal data fusion
+4. Store in local database
+5. Generate embeddings for search
+6. Enable natural language queries
 
-```sh
-bundle exec pod install
-```
+## 🤝 Contributing
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+This is a hackathon project designed for rapid development and demonstration. Key areas for contribution:
 
-```sh
-# Using npm
-npm run ios
+- RunAnywhere SDK integration
+- Additional AI model implementations
+- UI/UX improvements
+- Performance optimizations
+- Cross-platform testing
 
-# OR using Yarn
-yarn ios
-```
+## 📄 License
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+MIT License - see LICENSE file for details.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🙏 Acknowledgments
 
-## Step 3: Modify your app
+- RunAnywhere SDK for on-device AI capabilities
+- React Native community for the amazing framework
+- Hackathon organizers for the opportunity
 
-Now that you have successfully run the app, let's make changes!
+---
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+**Built with ❤️ for privacy-conscious users everywhere**
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+#MemoryLensAI #PrivacyFirst #OnDeviceAI #Hackathon2026
