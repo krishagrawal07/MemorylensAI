@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../components/AppIcon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -319,3 +319,4 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 });
+

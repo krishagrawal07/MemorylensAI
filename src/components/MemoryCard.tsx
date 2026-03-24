@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from './AppIcon';
 import { Memory } from '../types';
 
 type Props = {
@@ -196,3 +196,4 @@ const styles = StyleSheet.create({
     color: '#2196f3',
   },
 });
+

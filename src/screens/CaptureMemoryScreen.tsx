@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../components/AppIcon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { memoryService } from '../services/memoryService';
@@ -67,7 +67,7 @@ export default function CaptureMemoryScreen({ navigation }: Props) {
       {
         id: 'voice',
         title: 'Voice Note',
-        description: 'Record audio',
+        description: 'Tap to capture voice',
         icon: 'keyboard-voice',
         onPress: () => navigation.navigate('VoiceNote'),
       },
@@ -232,3 +232,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
