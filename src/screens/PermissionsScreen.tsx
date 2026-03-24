@@ -9,7 +9,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../components/AppIcon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   Permission,
@@ -297,3 +297,4 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
+

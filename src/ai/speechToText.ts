@@ -44,10 +44,16 @@ export class SpeechToTextService {
 
   async startListening(onResult: (text: string) => void): Promise<void> {
     this.assertReady();
-    // TODO: real-time STT stream from RunAnywhere
-    setTimeout(() => {
-      onResult('I kept my charger near the bed on the right side.');
-    }, 1200);
+    // Simulate immediate voice capture for demo
+    const demoTranscripts = [
+      'I kept my wallet in the top shelf near the mirror.',
+      'Car parked at gate 3, basement B2 beside pillar 18.',
+      'Medicine strip is in kitchen drawer, take after dinner.',
+      'Keys are hanging on the hook by the front door.',
+      'Phone charger is plugged in near the bed on the left side.',
+    ];
+    const result = demoTranscripts[Math.floor(Math.random() * demoTranscripts.length)];
+    onResult(result);
   }
 
   async stopListening(): Promise<void> {

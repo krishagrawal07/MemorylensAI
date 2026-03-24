@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar, View, Text, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppIcon from './src/components/AppIcon';
 import AppNavigator from './src/navigation/AppNavigator';
 import { memoryService } from './src/services/memoryService';
 
@@ -10,6 +11,7 @@ function App() {
   useEffect(() => {
     const initApp = async () => {
       try {
+        await AppIcon.loadFont();
         await memoryService.initialize();
         setAppReady(true);
       } catch (error) {
@@ -55,3 +57,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+

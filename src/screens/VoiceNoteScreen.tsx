@@ -12,8 +12,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../components/AppIcon';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { check, openSettings, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { speechToTextService } from '../ai/speechToText';
 import { memoryService } from '../services/memoryService';
@@ -33,12 +34,21 @@ const DEMO_PROMPTS = [
   'Medicine strip is in kitchen drawer, take after dinner.',
 ];
 
+type MicPermissionStatus = 'granted' | 'blocked' | 'denied' | 'unavailable' | 'error';
+
 export default function VoiceNoteScreen({ navigation }: Props) {
   const [transcript, setTranscript] = useState('');
   const [listening, setListening] = useState(false);
   const [saving, setSaving] = useState(false);
   const [serviceReady, setServiceReady] = useState(false);
   const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearFallbackTimer = () => {
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -56,15 +66,75 @@ export default function VoiceNoteScreen({ navigation }: Props) {
 
     return () => {
       mounted = false;
-      if (fallbackTimerRef.current) {
-        clearTimeout(fallbackTimerRef.current);
-      }
+      clearFallbackTimer();
+      speechToTextService.stopListening().catch(error => {
+        console.error('Failed to stop listening on unmount:', error);
+      });
     };
   }, []);
 
   const applyDemoFallbackTranscript = () => {
     const fallback = DEMO_PROMPTS[Math.floor(Math.random() * DEMO_PROMPTS.length)];
-    setTranscript(prev => (prev.trim() ? prev : fallback));
+    setTranscript(fallback);
+  };
+
+  const ensureMicPermission = async () => {
+    const permission =
+      Platform.OS === 'android'
+        ? PERMISSIONS.ANDROID.RECORD_AUDIO
+        : PERMISSIONS.IOS.MICROPHONE;
+
+    try {
+      const current = await check(permission);
+      if (current === RESULTS.GRANTED || current === RESULTS.LIMITED) {
+        return 'granted';
+      }
+      if (current === RESULTS.BLOCKED) {
+        return 'blocked';
+      }
+      if (current === RESULTS.UNAVAILABLE) {
+        return 'unavailable';
+      }
+
+      const requested = await request(permission);
+      if (requested === RESULTS.GRANTED || requested === RESULTS.LIMITED) {
+        return 'granted';
+      }
+      if (requested === RESULTS.BLOCKED) {
+        return 'blocked';
+      }
+      if (requested === RESULTS.UNAVAILABLE) {
+        return 'unavailable';
+      }
+      return 'denied';
+    } catch (error) {
+      console.error('Microphone permission check failed:', error);
+      return 'error';
+    }
+  };
+
+  const ensureSpeechServiceReady = async () => {
+    if (serviceReady) {
+      return true;
+    }
+
+    try {
+      await speechToTextService.initialize();
+      setServiceReady(true);
+      return true;
+    } catch (error) {
+      console.error('Speech service init retry failed:', error);
+      return false;
+    }
+  };
+
+  const handleOpenSettings = async () => {
+    try {
+      await openSettings();
+    } catch (error) {
+      console.error('Failed to open settings from voice note:', error);
+      Alert.alert('Open Settings Failed', 'Please open app settings manually to enable microphone access.');
+    }
   };
 
   const handleStartListening = async () => {
@@ -72,43 +142,82 @@ export default function VoiceNoteScreen({ navigation }: Props) {
       return;
     }
 
-    if (!serviceReady) {
-      Alert.alert('Speech model not ready', 'Initializing voice model. Please try again in a moment.');
+    console.log('Voice mic tapped');
+
+    const micStatus: MicPermissionStatus = await ensureMicPermission();
+    if (micStatus !== 'granted') {
+      applyDemoFallbackTranscript();
+
+      if (micStatus === 'blocked') {
+        Alert.alert(
+          'Microphone blocked',
+          'Enable microphone permission in settings to capture live voice input. A demo transcript was added for now.',
+          [
+            { text: 'Not Now' },
+            { text: 'Open Settings', onPress: handleOpenSettings },
+          ],
+        );
+      } else {
+        Alert.alert(
+          'Microphone unavailable',
+          'Microphone permission is not available, so a demo transcript was used.',
+        );
+      }
+      return;
+    }
+
+    const speechReady = await ensureSpeechServiceReady();
+    if (!speechReady) {
+      applyDemoFallbackTranscript();
+      Alert.alert(
+        'Speech model unavailable',
+        'Using a demo transcript because voice model initialization did not complete.',
+      );
       return;
     }
 
     setListening(true);
-    let hasResult = false;
+    let captureResolved = false;
+    clearFallbackTimer();
 
-    if (fallbackTimerRef.current) {
-      clearTimeout(fallbackTimerRef.current);
-    }
-
-    fallbackTimerRef.current = setTimeout(() => {
-      if (hasResult) {
+    const finalizeCapture = (result?: string) => {
+      if (captureResolved) {
         return;
       }
-      applyDemoFallbackTranscript();
+
+      captureResolved = true;
+      clearFallbackTimer();
+      const normalized = (result ?? '').trim();
+
+      if (normalized.length > 0) {
+        setTranscript(normalized);
+      } else {
+        applyDemoFallbackTranscript();
+      }
+
       setListening(false);
+      speechToTextService.stopListening().catch(error => {
+        console.error('Failed to stop listening after capture:', error);
+      });
+    };
+
+    await speechToTextService.stopListening().catch(() => undefined);
+
+    fallbackTimerRef.current = setTimeout(() => {
+      if (captureResolved) {
+        return;
+      }
+      finalizeCapture();
       Alert.alert('Using demo transcript', 'Voice fallback applied so you can continue the demo.');
-    }, 2200);
+    }, 2600);
 
     try {
       await speechToTextService.startListening(result => {
-        hasResult = true;
-        if (fallbackTimerRef.current) {
-          clearTimeout(fallbackTimerRef.current);
-        }
-        setTranscript(result.trim());
-        setListening(false);
+        finalizeCapture(result);
       });
     } catch (error) {
       console.error('Voice listen failed:', error);
-      if (fallbackTimerRef.current) {
-        clearTimeout(fallbackTimerRef.current);
-      }
-      setListening(false);
-      applyDemoFallbackTranscript();
+      finalizeCapture();
       Alert.alert(
         'Voice capture fallback',
         'Could not capture live voice input on this device, so a demo transcript was used.',
@@ -143,23 +252,36 @@ export default function VoiceNoteScreen({ navigation }: Props) {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="always">
           <View style={styles.header}>
             <Text style={styles.title}>Voice Note</Text>
             <Text style={styles.subtitle}>Capture a memory by voice and save it offline.</Text>
           </View>
 
           <View style={styles.recordCard}>
-            <TouchableOpacity style={styles.micButton} onPress={handleStartListening}>
-              {listening ? (
-                <ActivityIndicator color="#ffffff" />
-              ) : (
-                <Icon name="keyboard-voice" size={30} color="#ffffff" />
-              )}
+            <TouchableOpacity
+              style={[styles.captureButton, listening && styles.captureButtonDisabled]}
+              onPress={handleStartListening}
+              disabled={listening}
+              hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+              activeOpacity={0.85}
+              accessible
+              accessibilityRole="button"
+              accessibilityLabel={listening ? 'Listening for voice input' : 'Capture voice'}
+              accessibilityHint="Starts voice capture and fills the transcript"
+              testID="voice-capture-button"
+            >
+              <View style={styles.micButton}>
+                {listening ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Icon name="keyboard-voice" size={30} color="#ffffff" />
+                )}
+              </View>
+              <Text style={styles.recordText}>
+                {listening ? 'Listening for voice input...' : 'Tap to capture voice'}
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.recordText}>
-              {listening ? 'Listening for voice input...' : 'Tap to capture voice'}
-            </Text>
             <TouchableOpacity style={styles.fallbackButton} onPress={applyDemoFallbackTranscript}>
               <Text style={styles.fallbackText}>Use Demo Transcript</Text>
             </TouchableOpacity>
@@ -236,6 +358,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
+  },
+  captureButton: {
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  captureButtonDisabled: {
+    opacity: 0.9,
   },
   micButton: {
     width: 64,
@@ -315,3 +446,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#9ca3af',
   },
 });
+

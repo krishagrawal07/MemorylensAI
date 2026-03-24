@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -219,3 +219,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+

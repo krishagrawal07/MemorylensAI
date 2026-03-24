@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, StyleSheet } from 'react-native';
+import Icon from '../components/AppIcon';
 
 // Import screens (will create them next)
 import HomeScreen from '../screens/HomeScreen';
@@ -50,16 +51,26 @@ type TabIconProps = {
   size: number;
 };
 
-const HOME_TAB_ICON = ({ color, size }: TabIconProps) => (
-  <Icon name={TAB_ICON_MAP.Home} size={size} color={color} />
+type NamedTabIconProps = TabIconProps & {
+  name: string;
+};
+
+const TabIcon = ({ focused, color, size, name }: NamedTabIconProps) => (
+  <View style={[styles.tabIconWrapper, focused && styles.tabIconWrapperFocused]}>
+    <Icon name={name} size={focused ? size + 1 : size} color={focused ? '#007AFF' : color} />
+  </View>
 );
 
-const TIMELINE_TAB_ICON = ({ color, size }: TabIconProps) => (
-  <Icon name={TAB_ICON_MAP.Timeline} size={size} color={color} />
+const HOME_TAB_ICON = ({ focused, color, size }: TabIconProps) => (
+  <TabIcon focused={focused} color={color} size={size} name={TAB_ICON_MAP.Home} />
 );
 
-const SETTINGS_TAB_ICON = ({ color, size }: TabIconProps) => (
-  <Icon name={TAB_ICON_MAP.Settings} size={size} color={color} />
+const TIMELINE_TAB_ICON = ({ focused, color, size }: TabIconProps) => (
+  <TabIcon focused={focused} color={color} size={size} name={TAB_ICON_MAP.Timeline} />
+);
+
+const SETTINGS_TAB_ICON = ({ focused, color, size }: TabIconProps) => (
+  <TabIcon focused={focused} color={color} size={size} name={TAB_ICON_MAP.Settings} />
 );
 
 function MainTabs() {
@@ -67,7 +78,10 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: '#94a3b8',
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarItemStyle: styles.tabBarItem,
       }}
     >
       <Tab.Screen
@@ -153,3 +167,36 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    height: 68,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderTopWidth: 0,
+    backgroundColor: '#ffffff',
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  tabBarItem: {
+    paddingVertical: 2,
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  tabIconWrapper: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabIconWrapperFocused: {
+    backgroundColor: '#e8f1ff',
+  },
+});
+
